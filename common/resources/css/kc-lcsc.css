@@ -28,3 +28,21 @@ img.brand {
     height: 48px;
     width: 223px;
 }
+
+
+div.content-area form{
+    background:white;
+    padding: 5px;
+    position: relative;
+    z-index: 1;
+}
+.content-area div.lcsc-logos{
+    z-index: 0; 
+}
+
+.navbar-title{
+    background-image: url(../img/logo-largo-lcsc.svg);
+    background-size: cover;
+    height:26;
+    width: 115px;
+}
