@@ -135,7 +135,7 @@
                 </div>
 
                 <div class="${properties.kcInputWrapperClass!}">
-                    <textarea type="text" class="${properties.kcInputClass!}" id="user.attributes.usage" name="user.attributes.usage" value="${(register.formData['user.attributes.usage']!'')}"></textarea>
+                    <textarea type="text" class="${properties.kcInputClass!}" id="user.attributes.usage" name="user.attributes.usage">${(register.formData['user.attributes.usage']!'')}</textarea>
                 </div>
             </div>
 
