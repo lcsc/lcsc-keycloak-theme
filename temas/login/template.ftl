@@ -148,6 +148,7 @@
       </div>
 
     </div>
+    <div style="height: 100px;"></div>
     <div class="lcsc-logos">
     <img src="${url.resourcesPath}/img/logo-ingles-LCSC.png">
     <img src="${url.resourcesPath}/img/Ministerio_eco.svg">

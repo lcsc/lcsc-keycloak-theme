@@ -124,10 +124,44 @@
                 </div>
 
                 <div class="${properties.kcInputWrapperClass!}">
-                    <input type="text" class="${properties.kcInputClass!}" id="user.attributes.institution" name="user.attributes.institution" value="${(register.formData['user.attributes.institution']!'')}"/>
+                    <input type="text" class="${properties.kcInputClass!}" id="user.attributes.institution" name="user.attributes.institution"
+                    value="${(register.formData['user.attributes.institution']!'')}" 
+                    aria-invalid="<#if messagesPerField.existsError('user.attributes.institution')>true</#if>"/>
+
+                    <#if messagesPerField.existsError('user.attributes.institution')>
+                        <span id="input-error-institution" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                            ${kcSanitize(messagesPerField.get('user.attributes.institution'))?no_esc}
+                        </span>
+                    </#if>
                 </div>
             </div>
+            <div class="form-group">
+                <div class="${properties.kcLabelWrapperClass!}">
+                    <label for="user.attributes.license" class="${properties.kcLabelClass!}">License</label>
+                </div>
 
+                <div class="${properties.kcInputWrapperClass!}">
+                    <select class="${properties.kcInputClass!}" id="user.attributes.license" name="user.attributes.license"
+                        value="${(register.formData['user.attributes.license']!'')}"
+                     aria-invalid="<#if messagesPerField.existsError('user.attributes.license')>true</#if>">
+
+                    <#list LcscLicenses as item>
+                        <option value="${item}"
+                        ${((register.formData['user.attributes.license']!'')==(item.toString()))?string('selected','')}
+                        >${kcSanitize(msg(item.getMsg()))?no_esc}</option>
+                    </#list>
+                       <!-- <option value="no">${kcSanitize(msg('license.no'))?no_esc}</option>
+                        <option value="NonCommercial">${kcSanitize(msg('license.NonCommercial'))?no_esc}</option>
+                        <option value="Commercial">${kcSanitize(msg('license.Commercial'))?no_esc}</option> -->
+                    </select>
+                    
+                    <#if messagesPerField.existsError('user.attributes.license')>
+                        <span id="input-error-license" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                            ${kcSanitize(messagesPerField.get('user.attributes.license'))?no_esc}
+                        </span>
+                    </#if>
+                </div>
+            </div>
 
             <div class="form-group">
                 <div class="${properties.kcLabelWrapperClass!}">
@@ -135,7 +169,13 @@
                 </div>
 
                 <div class="${properties.kcInputWrapperClass!}">
-                    <textarea type="text" class="${properties.kcInputClass!}" id="user.attributes.usage" name="user.attributes.usage">${(register.formData['user.attributes.usage']!'')}</textarea>
+                    <textarea type="text" class="${properties.kcInputClass!}" id="user.attributes.usage" name="user.attributes.usage"
+                    aria-invalid="<#if messagesPerField.existsError('user.attributes.usage')>true</#if>">${(register.formData['user.attributes.usage']!'')}</textarea>
+                    <#if messagesPerField.existsError('user.attributes.usage')>
+                        <span id="input-error-usage" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
+                            ${kcSanitize(messagesPerField.get('user.attributes.usage'))?no_esc}
+                        </span>
+                    </#if>
                 </div>
             </div>
 

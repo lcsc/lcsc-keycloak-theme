@@ -46,7 +46,41 @@ public class ValidateLcscFieldsFormAction implements FormAction, FormActionFacto
         // Use context to get Configuration
         // Use form to add atributes (to show in the ftl)
         // https://www.keycloak.org/docs/latest/server_development/index.html#implementation-formaction-interface
+        form.setAttribute("LcscLicenses", LcscLicenses.values().clone());
     }
+
+
+    private String checkFieldBlank(MultivaluedMap<String, String> formData,String field,String message,List<FormMessage> errors){
+        String value= formData.getFirst(field);
+        if (Validation.isBlank(formData.getFirst(field))) {
+            errors.add(new FormMessage(field, message));
+            return null;
+        }
+
+        return value;
+    }
+    
+    private LcscLicenses checkFieldLicense(MultivaluedMap<String, String> formData,String field,String message,List<FormMessage> errors){
+        String value= formData.getFirst(field);
+        if (Validation.isBlank(formData.getFirst(field))) {
+            errors.add(new FormMessage(field, message));
+            return null;
+        }
+
+        LcscLicenses ret=null;
+        try{
+            ret= Enum.valueOf(LcscLicenses.class,value);
+        }catch(java.lang.IllegalArgumentException iae){
+            // Do nothing
+            LOG.error("Exception reading License" + iae.getMessage());
+            LOG.debug("Exception reading License",iae);
+        }
+        if(ret == null || !ret.isValid()){
+            errors.add(new FormMessage(field, message));
+        }
+        return ret;
+    }
+    
 
     @Override
     public void validate(ValidationContext context) {
@@ -59,27 +93,11 @@ public class ValidateLcscFieldsFormAction implements FormAction, FormActionFacto
 
         String eventError = Errors.INVALID_REGISTRATION;
 
-        if (Validation.isBlank(formData.getFirst((RegistrationPage.FIELD_FIRST_NAME)))) {
-            errors.add(new FormMessage(RegistrationPage.FIELD_FIRST_NAME, Messages.MISSING_FIRST_NAME));
-        }
+        checkFieldBlank(formData,"user.attributes.institution","missingInstitution",errors);
+        checkFieldBlank(formData,"user.attributes.usage","missingUsage",errors);
+        checkFieldLicense(formData,"user.attributes.license","missingLicense",errors);
 
-        if (Validation.isBlank(formData.getFirst((RegistrationPage.FIELD_LAST_NAME)))) {
-            errors.add(new FormMessage(RegistrationPage.FIELD_LAST_NAME, Messages.MISSING_LAST_NAME));
-        }
-
-        String email = formData.getFirst(Validation.FIELD_EMAIL);
-        if (Validation.isBlank(email)) {
-            errors.add(new FormMessage(RegistrationPage.FIELD_EMAIL, Messages.MISSING_EMAIL));
-        } else if (!Validation.isEmailValid(email)) {
-            formData.remove(Validation.FIELD_EMAIL);
-            errors.add(new FormMessage(RegistrationPage.FIELD_EMAIL, Messages.INVALID_EMAIL));
-        }
-
-        if (context.getSession().users().getUserByEmail(context.getRealm(),email) != null) {
-            formData.remove(Validation.FIELD_EMAIL);
-            errors.add(new FormMessage(RegistrationPage.FIELD_EMAIL, Messages.EMAIL_EXISTS));
-        }
-
+ 
         if (errors.size() > 0) {
             context.validationError(formData, errors);
             return;
