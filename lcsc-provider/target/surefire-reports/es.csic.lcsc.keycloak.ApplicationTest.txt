@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: es.csic.lcsc.keycloak.ApplicationTest
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.293 s - in es.csic.lcsc.keycloak.ApplicationTest
