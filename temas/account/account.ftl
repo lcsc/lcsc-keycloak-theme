@@ -66,15 +66,34 @@
         </div>
 
 
-            <div class="form-group">
-                <div class="col-sm-2 col-md-2">
-                    <label for="user.attributes.usage" class="control-label">Intended Usage</label>
-                </div>
-
-                 <div class="col-sm-10 col-md-10">
-                    <textarea type="text" class="form-control" id="user.attributes.usage" name="user.attributes.usage">${(account.attributes.usage!'')}</textarea>
-                </div>
+        <div class="form-group">
+            <div class="col-sm-2 col-md-2">
+                <label for="user.attributes.usage" class="control-label">Intended Usage</label>
             </div>
+
+                <div class="col-sm-10 col-md-10">
+                <textarea type="text" class="form-control" id="user.attributes.usage" name="user.attributes.usage">${(account.attributes.usage!'')}</textarea>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-2 col-md-2">
+                <label for="user.attributes.license" class="control-label">License</label>
+            </div>
+
+            <div class="col-sm-10 col-md-10">
+                <select class="form-control" id="user.attributes.license" name="user.attributes.license"
+                    value="${(account.attributes.license!'')}">
+
+                    <option value="no"
+                    ${((account.attributes.license!'')=="no")?string('selected','')}>${kcSanitize(msg('license.no'))?no_esc}</option>
+                    <option value="NonCommercial"
+                    ${((account.attributes.license!'')=="NonCommercial")?string('selected','')}>${kcSanitize(msg('license.NonCommercial'))?no_esc}</option>
+                    <option value="Commercial"
+                    ${((account.attributes.license!'')=="Commercial")?string('selected','')}>${kcSanitize(msg('license.Commercial'))?no_esc}</option>
+                </select>
+            </div>
+        </div>
 
         <div class="form-group">
             <div id="kc-form-buttons" class="col-md-offset-2 col-md-10 submit">
