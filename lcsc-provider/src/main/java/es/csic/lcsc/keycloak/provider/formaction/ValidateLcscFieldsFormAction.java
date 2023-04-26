@@ -10,8 +10,6 @@ import org.keycloak.authentication.FormAction;
 import org.keycloak.authentication.FormActionFactory;
 import org.keycloak.authentication.FormContext;
 import org.keycloak.authentication.ValidationContext;
-import org.keycloak.authentication.forms.RegistrationPage;
-import org.keycloak.events.Errors;
 import org.keycloak.forms.login.LoginFormsProvider;
 import org.keycloak.models.AuthenticationExecutionModel.Requirement;
 import org.keycloak.models.utils.FormMessage;
@@ -21,7 +19,6 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.services.validation.Validation;
-import org.keycloak.services.messages.Messages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +39,7 @@ public class ValidateLcscFieldsFormAction implements FormAction, FormActionFacto
 
     @Override
     public void buildPage(FormContext context, LoginFormsProvider form) {
-        LOG.trace("ValidateLcscFieldsFormAction.buildPage");
+        ////LOG.trace("ValidateLcscFieldsFormAction.buildPage");
         // Use context to get Configuration
         // Use form to add atributes (to show in the ftl)
         // https://www.keycloak.org/docs/latest/server_development/index.html#implementation-formaction-interface
@@ -85,13 +82,13 @@ public class ValidateLcscFieldsFormAction implements FormAction, FormActionFacto
     @Override
     public void validate(ValidationContext context) {
      //   context.success();
-        LOG.trace("ValidateLcscFieldsFormAction.validate");
+        //LOG.trace("ValidateLcscFieldsFormAction.validate");
 
 
         MultivaluedMap<String, String> formData = context.getHttpRequest().getDecodedFormParameters();
         List<FormMessage> errors = new ArrayList<>();
 
-        String eventError = Errors.INVALID_REGISTRATION;
+        //String eventError = Errors.INVALID_REGISTRATION;
 
         checkFieldBlank(formData,"user.attributes.institution","missingInstitution",errors);
         checkFieldBlank(formData,"user.attributes.usage","missingUsage",errors);
@@ -114,13 +111,13 @@ public class ValidateLcscFieldsFormAction implements FormAction, FormActionFacto
 
     @Override
     public boolean requiresUser() {
-        LOG.trace("ValidateLcscFieldsFormAction.requiresUser");
+        //LOG.trace("ValidateLcscFieldsFormAction.requiresUser");
         return false;
     }
 
     @Override
     public boolean configuredFor(KeycloakSession session, RealmModel realm, UserModel user) {
-        LOG.trace("ValidateLcscFieldsFormAction.configuredFor");
+        //LOG.trace("ValidateLcscFieldsFormAction.configuredFor");
         return false;
     }
 
@@ -131,65 +128,65 @@ public class ValidateLcscFieldsFormAction implements FormAction, FormActionFacto
 
     @Override
     public FormAction create(KeycloakSession session) {
-        LOG.trace("ValidateLcscFieldsFormAction.create");
+        //LOG.trace("ValidateLcscFieldsFormAction.create");
         return this;
     }
 
     @Override
     public String getId() {
-        LOG.trace("ValidateLcscFieldsFormAction.getId");
+        //LOG.trace("ValidateLcscFieldsFormAction.getId");
         return PROVIDER_ID;
     }
 
     @Override
     public void init(Scope scope) {
-        LOG.trace("ValidateLcscFieldsFormAction.scope");
+        //LOG.trace("ValidateLcscFieldsFormAction.scope");
     }
 
     @Override
     public void postInit(KeycloakSessionFactory arg0) {
-        LOG.trace("ValidateLcscFieldsFormAction.postInit");
+        //LOG.trace("ValidateLcscFieldsFormAction.postInit");
     }
 
     @Override
     public String getDisplayType() {
-        LOG.trace("ValidateLcscFieldsFormAction.getDisplayType");
+        //LOG.trace("ValidateLcscFieldsFormAction.getDisplayType");
         return DISPLAY_TYPE;
     }
 
     @Override
     public String getReferenceCategory() {
-        LOG.trace("ValidateLcscFieldsFormAction.getReferenceCategory");
+        //LOG.trace("ValidateLcscFieldsFormAction.getReferenceCategory");
         return null;
     }
 
     @Override
     public boolean isConfigurable() {
-        LOG.trace("ValidateLcscFieldsFormAction.isConfigurable");
+        //LOG.trace("ValidateLcscFieldsFormAction.isConfigurable");
         return false;
     }
 
     @Override
     public Requirement[] getRequirementChoices() {
-        LOG.trace("ValidateLcscFieldsFormAction.getRequirementChoices");
+        //LOG.trace("ValidateLcscFieldsFormAction.getRequirementChoices");
         return REQUIREMENT_CHOICES;
     }
 
     @Override
     public boolean isUserSetupAllowed() {
-        LOG.trace("ValidateLcscFieldsFormAction.isUserSetupAllowed");
+        //LOG.trace("ValidateLcscFieldsFormAction.isUserSetupAllowed");
         return false;
     }
 
     @Override
     public List<ProviderConfigProperty> getConfigProperties() {
-        LOG.trace("ValidateLcscFieldsFormAction.getConfigProperties");
+        //LOG.trace("ValidateLcscFieldsFormAction.getConfigProperties");
         return null;
     }
 
     @Override
     public String getHelpText() {
-        LOG.trace("ValidateLcscFieldsFormAction.getHelpText");
+        //LOG.trace("ValidateLcscFieldsFormAction.getHelpText");
         return HELP_TEXT;
     }
     

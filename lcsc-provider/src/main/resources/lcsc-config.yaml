@@ -1,0 +1,19 @@
+# Default Configuration
+
+# Email Setings, from and to:
+email:
+  origin: keycloak@lcsc.csic.es
+  destination: kc_admins@lcsc.csic.es, admin@lcsc.csic.es
+
+# Configuration per realm
+#  - name: <Name of the Realm, empty for others>
+#    enabled: <true to auto register the required action if the user is in one of the groups>
+#    groups: [] <list of groups, if the user is in one of this groups the ReqAction will be auto registered>    
+realms:
+  - name: test
+    enabled: true
+    groups: [PendingValidation]
+  - name: master
+    enabled: false
+  - groups: [PendigValidation]
+    enabled: true
