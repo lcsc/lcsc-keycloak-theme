@@ -3,7 +3,7 @@
 # Email Setings, from and to:
 email:
   origin: keycloak@lcsc.csic.es
-  destination: kc_admins@lcsc.csic.es, admin@lcsc.csic.es
+  destination: kc_admins@lcsc.csic.es
 
 # Configuration per realm
 #  - name: <Name of the Realm, empty for others>

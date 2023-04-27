@@ -7,15 +7,16 @@ import org.keycloak.authentication.RequiredActionFactory;
 import org.keycloak.authentication.RequiredActionProvider;
 import org.keycloak.authentication.requiredactions.util.UpdateProfileContext;
 import org.keycloak.authentication.requiredactions.util.UserUpdateProfileContext;
+import org.keycloak.email.EmailException;
+import org.keycloak.email.EmailSenderProvider;
+import org.keycloak.email.EmailTemplateProvider;
+import org.keycloak.email.freemarker.FreeMarkerEmailTemplateProvider;
 import org.keycloak.forms.login.LoginFormsProvider;
 import org.keycloak.forms.login.freemarker.model.ProfileBean;
 import org.keycloak.models.GroupModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.KeycloakSessionFactory;
 import org.keycloak.models.UserModel;
-import org.keycloak.sessions.AuthenticationSessionModel;
-import org.keycloak.theme.beans.MessageBean;
-import org.keycloak.theme.beans.MessageType;
 import org.keycloak.services.validation.Validation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +24,15 @@ import org.slf4j.LoggerFactory;
 import es.csic.lcsc.keycloak.provider.config.LcscConfig;
 import es.csic.lcsc.keycloak.provider.config.LcscConfigHelper;
 import es.csic.lcsc.keycloak.provider.config.LcscConfigRealm;
+import es.csic.lcsc.keycloak.provider.email.LcscEmailTemplateProvider;
 
 import javax.ws.rs.core.Response;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -81,10 +85,22 @@ public class AdminValidationRequiredAction implements RequiredActionProvider, Re
 		}
 	}
 
+	private void sendEmail(RequiredActionContext context) {
+
+		LcscEmailTemplateProvider email = new LcscEmailTemplateProvider(context.getSession(),config);
+		email.setAuthenticationSession(context.getAuthenticationSession()).setRealm(context.getRealm()).setUser(context.getUser());
+		
+		try {
+			email.sendRegisterRequest();
+		} catch (EmailException e) {
+			LOG.error("Error Sending Mail", e);
+		}
+	}
+
 	@Override
 	public void requiredActionChallenge(RequiredActionContext context) {
 		LOG.debug("Sending email to admins requested by user: "+ context.getUser().getUsername());
-		AuthenticationSessionModel authSession = context.getAuthenticationSession();
+		//AuthenticationSessionModel authSession = context.getAuthenticationSession();
 
         /*if (context.getUser().isEmailVerified()) {
             context.success();
@@ -103,6 +119,7 @@ public class AdminValidationRequiredAction implements RequiredActionProvider, Re
             EventBuilder event = context.getEvent().clone().event(EventType.SEND_VERIFY_EMAIL).detail(Details.EMAIL, email);
             challenge = sendVerifyEmail(context.getSession(), loginFormsProvider, context.getUser(), context.getAuthenticationSession(), event);
         } else {*/
+			sendEmail(context);
             challenge = createForm(context,null);
         //}
 
