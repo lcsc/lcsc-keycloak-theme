@@ -8,9 +8,7 @@ import org.keycloak.authentication.RequiredActionProvider;
 import org.keycloak.authentication.requiredactions.util.UpdateProfileContext;
 import org.keycloak.authentication.requiredactions.util.UserUpdateProfileContext;
 import org.keycloak.email.EmailException;
-import org.keycloak.email.EmailSenderProvider;
-import org.keycloak.email.EmailTemplateProvider;
-import org.keycloak.email.freemarker.FreeMarkerEmailTemplateProvider;
+
 import org.keycloak.forms.login.LoginFormsProvider;
 import org.keycloak.forms.login.freemarker.model.ProfileBean;
 import org.keycloak.models.GroupModel;
@@ -21,6 +19,8 @@ import org.keycloak.services.validation.Validation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.util.StdDateFormat;
+
 import es.csic.lcsc.keycloak.provider.config.LcscConfig;
 import es.csic.lcsc.keycloak.provider.config.LcscConfigHelper;
 import es.csic.lcsc.keycloak.provider.config.LcscConfigRealm;
@@ -29,10 +29,9 @@ import es.csic.lcsc.keycloak.provider.email.LcscEmailTemplateProvider;
 import javax.ws.rs.core.Response;
 
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -43,6 +42,7 @@ public class AdminValidationRequiredAction implements RequiredActionProvider, Re
 
 	public static final String PROVIDER_ID = "lcsc-admin-validation";
 	public static final String DISPLAY_TEXT = "Admin Validation";
+	public static final String EMAIL_SENT_ATTRIBUTE= "admin_email_sent";
 
 	private LcscConfig config;
 
@@ -66,12 +66,24 @@ public class AdminValidationRequiredAction implements RequiredActionProvider, Re
 		return false;
 	}
 
+	public boolean hasRequiredAction(UserModel user){
+		Iterator<String> it = user.getRequiredActionsStream().iterator();
+		while(it.hasNext()){
+			String action =it.next();
+			if(PROVIDER_ID.equals(action))return true;
+		}
+		return false;
+	}
 	@Override
 	public void evaluateTriggers(RequiredActionContext context) {
 		LOG.trace("Evaluating Triggers...");
 		LcscConfigRealm realmCfg = config.getRealm(context.getRealm().getName());
 
 		if (realmCfg.isEnabled()){
+			if(hasRequiredAction(context.getUser())){
+				LOG.debug("User already has the required action");
+				return;
+			}
 			if(isMemberOf(context.getUser(),realmCfg.getGroups())){
 				LOG.debug("User is in AutoBlock Groups");
 				context.getUser().addRequiredAction(PROVIDER_ID);
@@ -99,41 +111,33 @@ public class AdminValidationRequiredAction implements RequiredActionProvider, Re
 
 	@Override
 	public void requiredActionChallenge(RequiredActionContext context) {
-		LOG.debug("Sending email to admins requested by user: "+ context.getUser().getUsername());
-		//AuthenticationSessionModel authSession = context.getAuthenticationSession();
+		LcscConfigRealm realmCfg = config.getRealm(context.getRealm().getName());
+		UserModel user = context.getUser();
+		if(!isMemberOf(user,realmCfg.getGroups())){
+			LOG.debug("The user "+user.getUsername()+" has been validated");
+			//One Admin has granted access
+			context.success();
+			user.removeRequiredAction(PROVIDER_ID);
 
-        /*if (context.getUser().isEmailVerified()) {
-            context.success();
-           // authSession.removeAuthNote(Constants.VERIFY_EMAIL_KEY);
-            return;
-        }*/
+			return;
+		}
 		
-
-        //LoginFormsProvider loginFormsProvider = context.form();
-        Response challenge;
-        //authSession.setClientNote(AuthorizationEndpointBase.APP_INITIATED_FLOW, null);
-
-        // Do not allow resending e-mail by simple page refresh, i.e. when e-mail sent, it should be resent properly via email-verification endpoint
-        /*if (! Objects.equals(authSession.getAuthNote(Constants.VERIFY_EMAIL_KEY), email)) {
-            authSession.setAuthNote(Constants.VERIFY_EMAIL_KEY, email);
-            EventBuilder event = context.getEvent().clone().event(EventType.SEND_VERIFY_EMAIL).detail(Details.EMAIL, email);
-            challenge = sendVerifyEmail(context.getSession(), loginFormsProvider, context.getUser(), context.getAuthenticationSession(), event);
-        } else {*/
+		if(Validation.isBlank(user.getFirstAttribute(EMAIL_SENT_ATTRIBUTE))){
+			LOG.debug("Sending email to admins requested by user: "+ user.getUsername());
 			sendEmail(context);
-            challenge = createForm(context,null);
-        //}
+			user.setSingleAttribute(EMAIL_SENT_ATTRIBUTE, StdDateFormat.instance.format(new Date()));
+		}
+        Response challenge;
+		challenge = createForm(context,null);
+		context.challenge(challenge);
 
-        context.challenge(challenge);
 	}
 
 	@Override
 	public void processAction(RequiredActionContext context) {
-		// submitted form
-        LOG.debug("Re-sending email to admins requested by user: "+context.getUser().getUsername());
-
-        // This will allow user to re-send email again
-        //context.getAuthenticationSession().removeAuthNote(Constants.VERIFY_EMAIL_KEY);
-
+		UserModel user=context.getUser();
+        LOG.debug("Re-sending email to admins requested by user: "+user.getUsername());
+		user.removeAttribute(EMAIL_SENT_ATTRIBUTE);
         requiredActionChallenge(context);
 	}
 
