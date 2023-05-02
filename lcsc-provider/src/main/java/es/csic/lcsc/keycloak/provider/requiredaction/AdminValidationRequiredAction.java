@@ -28,6 +28,8 @@ import es.csic.lcsc.keycloak.provider.email.LcscEmailTemplateProvider;
 
 import javax.ws.rs.core.Response;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.Iterator;
@@ -168,6 +170,13 @@ public class AdminValidationRequiredAction implements RequiredActionProvider, Re
 				return;
 			}
 			InputStream is = this.getClass().getResourceAsStream(path);
+			if(is == null){
+				LOG.debug("Not found by classloader");
+				File f = new File(path);
+				if(f.exists() && f.isFile()){
+					is = new FileInputStream(f);
+				}
+			}
 			if (is == null){
 				LOG.error("Configuration: "+path+" Not Found");
 				LOG.warn("Downgrading to default configuration");
