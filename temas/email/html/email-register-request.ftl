@@ -1,7 +1,7 @@
 <#import "template.ftl" as layout>
 <@layout.emailLayout>
 <h1>User Validation Request</h1>
-The user <b>${user.firstName} ${user.lastName}</b> (${user.username}) has requested access to ${realmName}.<p>
+The user <b>${user.firstName} ${user.lastName}</b> (${user.username} - <a href="mailto:${user.email}">${user.email}</a>) has requested access to ${realmName}.<p>
 
 Has reported the information:
 <ul>
