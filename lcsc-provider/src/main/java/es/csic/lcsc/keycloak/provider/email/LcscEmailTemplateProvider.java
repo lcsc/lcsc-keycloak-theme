@@ -32,6 +32,9 @@ public class LcscEmailTemplateProvider extends FreeMarkerEmailTemplateProvider{
         smtpConfig.put("from",lcscConfig.getEmail().getOrigin());
         smtpConfig.put("fromDisplayName",lcscConfig.getEmail().getOrigin());
         send(smtpConfig, email.getSubject(), email.getTextBody(), email.getHtmlBody(),lcscConfig.getEmail().getDestination());
+
+        email = processTemplate("adminVerifyEmailSubject",subjectAttributes, "email-register-user.ftl", attributes);
+        send(smtpConfig, email.getSubject(), email.getTextBody(), email.getHtmlBody(),user.getEmail());
     }
     
 }
