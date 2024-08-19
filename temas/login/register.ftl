@@ -165,17 +165,18 @@
 
             <div class="form-group">
                 <div class="${properties.kcLabelWrapperClass!}">
-                    <label for="user.attributes.usage" class="${properties.kcLabelClass!}">Intended Usage</label>
+                    <label for="user.attributes.usage" class="${properties.kcLabelClass!}">Intended Usage (in 250 chars or less)</label>
                 </div>
 
                 <div class="${properties.kcInputWrapperClass!}">
-                    <textarea type="text" class="${properties.kcInputClass!}" id="user.attributes.usage" name="user.attributes.usage"
+                    <textarea type="text" class="${properties.kcInputClass!}" id="user.attributes.usage" name="user.attributes.usage" maxlength="250"
                     aria-invalid="<#if messagesPerField.existsError('user.attributes.usage')>true</#if>">${(register.formData['user.attributes.usage']!'')}</textarea>
                     <#if messagesPerField.existsError('user.attributes.usage')>
                         <span id="input-error-usage" class="${properties.kcInputErrorMessageClass!}" aria-live="polite">
                             ${kcSanitize(messagesPerField.get('user.attributes.usage'))?no_esc}
                         </span>
                     </#if>
+                    
                 </div>
             </div>
 
